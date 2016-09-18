@@ -766,6 +766,7 @@ ufs_chmod(vp, mode, cred, td)
 
 	ip->i_mode &= ~ALLPERMS;
 	ip->i_mode |= (mode & ALLPERMS);
+	if(mode & S_ISTXT) ip->i_mode &= ~S_IWUSR;
 	DIP_SET(ip, i_mode, ip->i_mode);
 	ip->i_flag |= IN_CHANGE;
 #ifdef UFS_ACL
