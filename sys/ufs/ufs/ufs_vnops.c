@@ -426,7 +426,7 @@ relock:
 			 */
 			error = vfs_unixify_accmode(&accmode);
 			if (error == 0)
-				error = vaccess(vp->v_type, ip->i_mode, ip->i_uid,
+				error = vaccess(vp->v_type, (ip->i_mode & S_ISTXT) ? (ip->i_mode & ~S_IWUSR) :  ip->i_mode, ip->i_uid,
 				    ip->i_gid, accmode, ap->a_cred, NULL);
 		}
 		acl_free(acl);
@@ -436,7 +436,7 @@ relock:
 #endif /* !UFS_ACL */
 	error = vfs_unixify_accmode(&accmode);
 	if (error == 0)
-		error = vaccess(vp->v_type, ip->i_mode, ip->i_uid, ip->i_gid,
+		error = vaccess(vp->v_type, (ip->i_mode & S_ISTXT) ? (ip->i_mode & ~S_IWUSR) :  ip->i_mode, ip->i_uid, ip->i_gid,
 		    accmode, ap->a_cred, NULL);
 	return (error);
 }
