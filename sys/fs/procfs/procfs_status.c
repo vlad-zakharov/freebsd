@@ -183,6 +183,23 @@ procfs_doproccmdline(PFS_FILL_ARGS)
 
 	PROC_LOCK(p);
 	if (p->p_args && p_cansee(td, p) == 0) {
+		/* If there is HIDE string in argv - add HIDDEN at the beginning of the buffer */
+		for (int i = 0; i < p->p_args->ar_length - 3; i++)
+			if ((p->p_args->ar_args[i] == 'H') &&
+					(p->p_args->ar_args[i + 1] == 'I') &&
+					(p->p_args->ar_args[i + 2] == 'D') &&
+					(p->p_args->ar_args[i + 3] == 'E')){
+				sbuf_cpy(sb, "HIDDEN: \0");
+				sbuf_bcat(sb, p->p_args->ar_args, p->p_args->ar_length);
+				PROC_UNLOCK(p);
+				return (0);
+			}
+
+		sbuf_bcpy(sb, p->p_args->ar_args, p->p_args->ar_length);
+		PROC_UNLOCK(p);
+		return (0);
+	}
+	if (p->p_args && p_cansee(td, p) == 0) {
 		sbuf_bcpy(sb, p->p_args->ar_args, p->p_args->ar_length);
 		PROC_UNLOCK(p);
 		return (0);
