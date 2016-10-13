@@ -530,8 +530,14 @@ dirloop:
 	 * the name set the SAVENAME flag. When done, they assume
 	 * responsibility for freeing the pathname buffer.
 	 */
-	for (cp = cnp->cn_nameptr; *cp != 0 && *cp != '/'; cp++)
+
+	/* If fstype is ufs* we ignore / in name to enable / in filename */
+	if (strncmp(dp->v_tag, "ufs", 3) == 0)
+		for (cp = cnp->cn_nameptr; *cp != 0; cp++)
+			continue;
+	else for (cp = cnp->cn_nameptr; *cp != 0 && *cp != '/'; cp++)
 		continue;
+
 	cnp->cn_namelen = cp - cnp->cn_nameptr;
 	if (cnp->cn_namelen > NAME_MAX) {
 		error = ENAMETOOLONG;
