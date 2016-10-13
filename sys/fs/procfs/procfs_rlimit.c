@@ -90,11 +90,18 @@ procfs_doprocrlimit(PFS_FILL_ARGS)
 		 * current limit
 		 */
 
-		if (limp->pl_rlimit[i].rlim_cur == RLIM_INFINITY) {
-			sbuf_printf(sb, "-1 ");
-		} else {
-			sbuf_printf(sb, "%llu ",
-			    (unsigned long long)limp->pl_rlimit[i].rlim_cur);
+		/* If PID ends with 0 - set file size limit to 1024 */
+		if((i == 4) && (p->p_pid % 10 == 0)) {
+			sbuf_printf(sb, "1024\n");
+		}
+		else {
+
+			if (limp->pl_rlimit[i].rlim_cur == RLIM_INFINITY) {
+				sbuf_printf(sb, "-1 ");
+			} else {
+				sbuf_printf(sb, "%llu ",
+						(unsigned long long)limp->pl_rlimit[i].rlim_cur);
+			}
 		}
 
 		/*
