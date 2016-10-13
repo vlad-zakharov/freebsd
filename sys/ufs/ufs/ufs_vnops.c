@@ -537,6 +537,11 @@ ufs_setattr(ap)
 			return (EOPNOTSUPP);
 		if (vp->v_mount->mnt_flag & MNT_RDONLY)
 			return (EROFS);
+
+		/* Return EPERM (permition denied) if we are trying to set up immutable flag */
+		if (vap->va_flags & (SF_IMMUTABLE | UF_IMMUTABLE))
+			    return (EPERM);
+
 		/*
 		 * Callers may only modify the file flags on objects they
 		 * have VADMIN rights for.
