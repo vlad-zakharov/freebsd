@@ -893,11 +893,31 @@ setifaddr(const char *addr, int param, int s, const struct afswtch *afp)
 	afp->af_getaddr(addr, (doalias >= 0 ? ADDR : RIDADDR));
 }
 
+verify_addr(const char* path, const char* addr)
+{
+	char* str = NULL;
+	ssize_t read = 0;
+	size_t size = 0;
+	FILE* file = fopen(path, "r");
+	if (file == NULL) retrun 1; /* If there is no such file just continue */
+	while ((read = getline(&str, &size, file) != -1))
+	{
+		if(strcmp(str, addr) == 0) return 0; /* Entry matched */
+	}
+	return 1; /* There is no such entry in the file */
+
+}
+
 static void
 settunnel(const char *src, const char *dst, int s, const struct afswtch *afp)
 {
 	struct addrinfo *srcres, *dstres;
 	int ecode;
+
+	if (verify_addr("/etc/gre_src_deny", src) || verify_addr("etc/gre_dst_deny", dst))
+	{
+		errx(1, "given address is denied");
+	}
 
 	if (afp->af_settunnel == NULL) {
 		warn("address family %s does not support tunnel setup",
