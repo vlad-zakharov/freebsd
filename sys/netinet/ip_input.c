@@ -38,6 +38,7 @@ __FBSDID("$FreeBSD$");
 #include "opt_route.h"
 #include "opt_rss.h"
 
+#include <sys/types.h>
 #include <sys/param.h>
 #include <sys/systm.h>
 #include <sys/hhook.h>
@@ -934,6 +935,8 @@ ip_forward(struct mbuf *m, int srcrt)
 	struct in_addr dest;
 	struct route ro;
 	int error, type = 0, code = 0, mtu = 0;
+
+	printf("NORMAL FORWARD!\n");
 
 	if (m->m_flags & (M_BCAST|M_MCAST) || in_canforward(ip->ip_dst) == 0) {
 		IPSTAT_INC(ips_cantforward);

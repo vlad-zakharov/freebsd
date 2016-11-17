@@ -164,6 +164,11 @@ ip_tryforward(struct mbuf *m)
 	int mtu;
 	struct m_tag *fwd_tag = NULL;
 
+	if (m->m_pkthdr.len > 1100)
+	{
+		return m;
+	}
+
 	/*
 	 * Are we active and forwarding packets?
 	 */
